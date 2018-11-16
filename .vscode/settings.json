@@ -1,0 +1,14 @@
+{
+    "emmet.triggerExpansionOnTab": true,
+    "workbench.iconTheme": "vscode-icons",
+    "window.zoomLevel": 1,
+    "workbench.colorTheme": "Material Theme Ocean",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "editor.formatOnSave": true,
+    "[javascript]": {
+        "editor.formatOnSave": false
+    },
+    "eslint.autoFixOnSave": true,
+    "eslint.alwaysShowStatus": true,
+    "prettier.disableLanguages": ["js"]
+}
