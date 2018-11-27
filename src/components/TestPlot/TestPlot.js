@@ -24,24 +24,16 @@ class TestPlot extends PureComponent {
         { name: 'Page E', uv: 1890 },
         { name: 'Page F', uv: 2390 },
         { name: 'Page G', uv: 3490 }
-      ]
+      ],
+      base: 'https://api.iextrading.com/1.0/'
     };
   }
 
   componentDidMount() {
     axios
-      .get(
-        'https://www.quandl.com/api/v3/datasets/OPEC/ORB.json?api_key=NF_98GZte7JRFrhxMb9z'
-      )
-      .then(data => {
-        const needed = data.data.dataset.data.map(el => {
-          return {
-            name: el[0],
-            uv: el[1]
-          };
-        });
-        this.setState({ data: needed });
-      });
+      .get(`${this.state.base}/stock/iev/price`)
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
   }
 
   render() {

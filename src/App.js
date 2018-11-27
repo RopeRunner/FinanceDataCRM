@@ -2,9 +2,17 @@ import React, { Component } from 'react';
 import './App.css';
 import { Route, Switch, Link } from 'react-router-dom';
 import TestPlot from './components/TestPlot/TestPlot';
-import BasicPlotComponent from './components/BasicPlot/BasicPlotComponent';
+import PricingTingoComponent from './components/PricingTingo/PricingTingoComponent';
+import URLS from './helpers/URLS';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      urls: URLS()
+    };
+  }
   render() {
     return (
       <div className="App">
@@ -21,7 +29,11 @@ class App extends Component {
             }}
           />
           <Route path="/test" exact render={() => <TestPlot />} />
-          <Route path="/basic" exact render={() => <BasicPlotComponent />} />
+          <Route
+            path="/basic"
+            exact
+            render={() => <PricingTingoComponent url={this.state.urls.base} />}
+          />
         </Switch>
       </div>
     );
