@@ -7,6 +7,7 @@ finance data, test some/build/create/invent new/old/etc <br>
 metrics to analyze markets, make decisions. <br>
 Feel free to use all libraries you want, but <br>
 when adding new dependency - create description to it. <br>
+And new branch, so we could test it before add to master. <br>
 Thanks! Enjoy!
 
 ## Available Scripts
