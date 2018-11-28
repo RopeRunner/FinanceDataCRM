@@ -10,6 +10,7 @@ import {
   Legend
 } from 'recharts';
 import { zScore, mean, standardDeviation } from 'simple-statistics';
+import { PulseLoader } from 'react-loaders-spinners';
 
 class IEXComponent extends React.PureComponent {
   constructor(props) {
@@ -22,20 +23,26 @@ class IEXComponent extends React.PureComponent {
         data: []
       },
       currentMeanMax: 0,
-      currentMeanMin: 0
+      currentMeanMin: 0,
+      isLoading: true
     };
 
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
+    this.initialization = this.initialization.bind(this);
   }
 
   next() {
-    if ((this.state.currentData.step + 1) * 300 > this.state.data.length)
+    if (
+      (this.state.currentData.step + 1) * this.props.separator >
+      this.state.data.length
+    )
       return;
 
     let nC = this.state.data.slice(
-      (this.state.currentData.step + 1) * 300,
-      (this.state.currentData.step + 1) * 300 + 300
+      (this.state.currentData.step + 1) * this.props.separator,
+      (this.state.currentData.step + 1) * this.props.separator +
+        this.props.separator
     );
 
     let perMeanMinMax = mean(nC.map(el => (el.min + el.max) / 2));
@@ -66,8 +73,9 @@ class IEXComponent extends React.PureComponent {
     if (this.state.currentData.step - 1 < 0) return;
 
     let nC = this.state.data.slice(
-      (this.state.currentData.step - 1) * 300,
-      (this.state.currentData.step - 1) * 300 + 300
+      (this.state.currentData.step - 1) * this.props.separator,
+      (this.state.currentData.step - 1) * this.props.separator +
+        this.props.separator
     );
 
     let perMeanMinMax = mean(nC.map(el => (el.min + el.max) / 2));
@@ -93,7 +101,7 @@ class IEXComponent extends React.PureComponent {
     });
   }
 
-  componentDidMount() {
+  initialization() {
     axios
       .get('https://api.iextrading.com/1.0/stock/aapl/chart/5y')
       .then(res => res.data)
@@ -109,7 +117,7 @@ class IEXComponent extends React.PureComponent {
           });
         });
 
-        const step = 300;
+        const step = this.props.separator;
 
         let cDTMP = dataNew.slice(0, step);
         let meanPeriodicalMinMax = mean(cDTMP.map(el => (el.min + el.max) / 2));
@@ -132,37 +140,70 @@ class IEXComponent extends React.PureComponent {
         this.setState({
           data: dataNew,
           currentData: { step: 0, data: finalCurrent },
-          currentMeanMax: meanPeriodicalMinMax
+          currentMeanMax: meanPeriodicalMinMax,
+          isLoading: false
         });
       });
   }
 
+  componentDidMount() {
+    this.initialization();
+  }
+
   render() {
     return (
-      <section>
-        <span>Mean for minimals per preiod: {this.state.currentMeanMin}</span>
-        <br />
-        <span>Mean for maximals per preiod: {this.state.currentMeanMax}</span>
-        <LineChart
-          width={1300}
-          height={750}
-          data={this.state.currentData.data}
-          style={{ margin: 'auto', marginTop: '0px', marginRight: '200px' }}
-        >
-          <XAxis dataKey="date" />
-          <YAxis />
-          <CartesianGrid strokeDasharray="1 1" />
-          <Tooltip separator="-" />
-          <Legend />
-          <Line type="linear" dataKey="min" stroke="#ff7300" dot={false} />
-          <Line type="linear" dataKey="max" stroke="green" dot={false} />
-          <Line type="linear" dataKey="def" stroke="black" dot={false} />
-          <Line type="linear" dataKey="zScore" stroke="violet" dot={false} />
-          <Line type="linear" dataKey="vwap" stroke="#1d72f9" dot={false} />
-        </LineChart>
-        <button onClick={() => this.prev()}>Prev</button>
-        <span>{this.state.currentData.step}</span>
-        <button onClick={() => this.next()}>Next</button>
+      <section
+        style={{
+          display: 'flex',
+          flexFlow: 'column nowrap',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        {this.state.isLoading ? (
+          <PulseLoader
+            width={600}
+            height={600}
+            pColor="dodgerblue"
+            sColor="#FF711E"
+            style={{ alignSelf: 'center' }}
+          />
+        ) : (
+          <React.Fragment>
+            <span>
+              Mean for minimals per preiod: {this.state.currentMeanMin}
+            </span>
+            <br />
+            <span>
+              Mean for maximals per preiod: {this.state.currentMeanMax}
+            </span>
+            <LineChart
+              width={1300}
+              height={750}
+              data={this.state.currentData.data}
+              style={{ margin: 'auto', marginTop: '0px', marginRight: '200px' }}
+            >
+              <XAxis dataKey="date" />
+              <YAxis />
+              <CartesianGrid strokeDasharray="1 1" />
+              <Tooltip separator="-" />
+              <Legend />
+              <Line type="linear" dataKey="min" stroke="#ff7300" dot={false} />
+              <Line type="linear" dataKey="max" stroke="green" dot={false} />
+              <Line type="linear" dataKey="def" stroke="black" dot={false} />
+              <Line
+                type="linear"
+                dataKey="zScore"
+                stroke="violet"
+                dot={false}
+              />
+              <Line type="linear" dataKey="vwap" stroke="#1d72f9" dot={false} />
+            </LineChart>
+            <button onClick={() => this.prev()}>Prev</button>
+            <span>{this.state.currentData.step}</span>
+            <button onClick={() => this.next()}>Next</button>
+          </React.Fragment>
+        )}
       </section>
     );
   }

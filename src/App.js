@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Route, Switch, Link } from 'react-router-dom';
+import { Route, Switch, Link, Redirect } from 'react-router-dom';
 import TestPlot from './components/TestPlot/TestPlot';
 import PricingTingoComponent from './components/PricingTingo/PricingTingoComponent';
 import URLS from './helpers/URLS';
@@ -11,9 +11,18 @@ class App extends Component {
     super(props);
 
     this.state = {
-      urls: URLS()
+      urls: URLS(),
+      separatorForIEX: 30
     };
+
+    this.changeSeparatorIEX = this.changeSeparatorIEX.bind(this);
   }
+
+  changeSeparatorIEX(newSep) {
+    if (typeof newSep !== 'number') return;
+    this.setState({ separatorForIEX: newSep });
+  }
+
   render() {
     return (
       <div className="App">
@@ -23,8 +32,23 @@ class App extends Component {
             exact
             render={() => {
               return (
-                <section>
-                  <Link to="/test">Test Data</Link>
+                <section
+                  style={{
+                    display: 'flex',
+                    flexFlow: 'column nowrap',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Link style={{ textDecoration: 'none' }} to="/test">
+                    Test Data
+                  </Link>
+                  <Link style={{ textDecoration: 'none' }} to="/basic">
+                    To tingo dat
+                  </Link>
+                  <Link style={{ textDecoration: 'none' }} to="/iex">
+                    To IEX
+                  </Link>
                 </section>
               );
             }}
@@ -35,7 +59,14 @@ class App extends Component {
             exact
             render={() => <PricingTingoComponent url={this.state.urls.base} />}
           />
-          <Route path="/iex" exact render={() => <IEXComponent />} />
+          <Route
+            path="/iex"
+            exact
+            render={() => (
+              <IEXComponent separator={this.state.separatorForIEX} />
+            )}
+          />
+          <Route path="**" render={() => <Redirect to="/" />} />
         </Switch>
       </div>
     );
