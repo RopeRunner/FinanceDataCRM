@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend
 } from 'recharts';
-import axios from 'axios';
 import { zScore, mean, standardDeviation } from 'simple-statistics';
 import validator from 'validator';
 

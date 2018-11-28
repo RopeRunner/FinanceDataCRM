@@ -4,6 +4,7 @@ import { Route, Switch, Link } from 'react-router-dom';
 import TestPlot from './components/TestPlot/TestPlot';
 import PricingTingoComponent from './components/PricingTingo/PricingTingoComponent';
 import URLS from './helpers/URLS';
+import IEXComponent from './components/IEX/IEX';
 
 class App extends Component {
   constructor(props) {
@@ -34,6 +35,7 @@ class App extends Component {
             exact
             render={() => <PricingTingoComponent url={this.state.urls.base} />}
           />
+          <Route path="/iex" exact render={() => <IEXComponent />} />
         </Switch>
       </div>
     );
