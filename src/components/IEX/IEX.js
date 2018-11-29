@@ -36,6 +36,9 @@ class IEXComponent extends React.PureComponent {
     this.calcSMA = this.calcSMA.bind(this);
   }
 
+  /**
+   *  TODO EMA to display on same plot
+   */
   calcSMA() {
     const { SMAStep } = this.state;
 
