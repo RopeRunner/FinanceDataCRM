@@ -24,12 +24,46 @@ class IEXComponent extends React.PureComponent {
       },
       currentMeanMax: 0,
       currentMeanMin: 0,
-      isLoading: true
+      isLoading: true,
+      SMAStep: 30,
+      SMALoading: true,
+      SMAData: []
     };
 
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
     this.initialization = this.initialization.bind(this);
+    this.calcSMA = this.calcSMA.bind(this);
+  }
+
+  calcSMA() {
+    const { SMAStep } = this.state;
+
+    let working = this.state.data.map(el => {
+        return {
+          date: el.date,
+          close: el.close
+        };
+      }),
+      SMAData = [],
+      firstCounter = 0,
+      finishCounter = SMAStep;
+
+    for (let i = 0; i < working.length - SMAStep; i++) {
+      let tmpMEAN = mean(
+        working.slice(firstCounter, finishCounter).map(el => el.close)
+      );
+
+      firstCounter++;
+      finishCounter++;
+      SMAData.push({
+        date: working[i].date,
+        SMA: tmpMEAN,
+        def: 0
+      });
+    }
+
+    this.setState({ SMAData: SMAData, SMALoading: false });
   }
 
   next() {
@@ -101,9 +135,9 @@ class IEXComponent extends React.PureComponent {
     });
   }
 
-  initialization() {
+  initialization(ticker = 'aapl') {
     axios
-      .get('https://api.iextrading.com/1.0/stock/aapl/chart/5y')
+      .get(`https://api.iextrading.com/1.0/stock/${ticker}/chart/5y`)
       .then(res => res.data)
       .then(data => {
         let dataNew = [];
@@ -113,7 +147,8 @@ class IEXComponent extends React.PureComponent {
             date: element.date,
             min: element.low,
             max: element.high,
-            vwap: element.vwap
+            vwap: element.vwap,
+            close: element.close
           });
         });
 
@@ -148,6 +183,7 @@ class IEXComponent extends React.PureComponent {
 
   componentDidMount() {
     this.initialization();
+    setTimeout(() => this.calcSMA(), 5000);
   }
 
   render() {
@@ -198,6 +234,36 @@ class IEXComponent extends React.PureComponent {
                 dot={false}
               />
               <Line type="linear" dataKey="vwap" stroke="#1d72f9" dot={false} />
+            </LineChart>
+            <button onClick={() => this.prev()}>Prev</button>
+            <span>{this.state.currentData.step}</span>
+            <button onClick={() => this.next()}>Next</button>
+          </React.Fragment>
+        )}
+        {this.state.SMALoading ? (
+          <PulseLoader
+            width={600}
+            height={600}
+            pColor="dodgerblue"
+            sColor="#FF711E"
+            style={{ alignSelf: 'center' }}
+          />
+        ) : (
+          <React.Fragment>
+            <span>SMA with 30-day period per whole period days</span>
+            <LineChart
+              width={1300}
+              height={750}
+              data={this.state.SMAData}
+              style={{ margin: 'auto', marginTop: '0px', marginRight: '200px' }}
+            >
+              <XAxis dataKey="date" />
+              <YAxis />
+              <CartesianGrid strokeDasharray="1 1" />
+              <Tooltip separator=":" />
+              <Legend />
+              <Line type="linear" dataKey="SMA" stroke="#ff7300" dot={false} />
+              <Line type="linear" dataKey="def" stroke="black" dot={false} />
             </LineChart>
             <button onClick={() => this.prev()}>Prev</button>
             <span>{this.state.currentData.step}</span>

@@ -1,0 +1,28 @@
+.home {
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.home__list {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    width: 80%;
+}
+
+.home__list__item {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 100px;
+}
+
+.home__list__item a {
+    margin-right: 10px;
+}

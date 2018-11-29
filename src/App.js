@@ -5,6 +5,8 @@ import TestPlot from './components/TestPlot/TestPlot';
 import PricingTingoComponent from './components/PricingTingo/PricingTingoComponent';
 import URLS from './helpers/URLS';
 import IEXComponent from './components/IEX/IEX';
+import HomeComponent from './components/UI/Home/HomeComponent';
+import HeaderComponent from './components/UI/Header/HeaderComponent';
 
 class App extends Component {
   constructor(props) {
@@ -26,33 +28,9 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <HeaderComponent />
         <Switch>
-          <Route
-            path="/"
-            exact
-            render={() => {
-              return (
-                <section
-                  style={{
-                    display: 'flex',
-                    flexFlow: 'column nowrap',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Link style={{ textDecoration: 'none' }} to="/test">
-                    Test Data
-                  </Link>
-                  <Link style={{ textDecoration: 'none' }} to="/basic">
-                    To tingo dat
-                  </Link>
-                  <Link style={{ textDecoration: 'none' }} to="/iex">
-                    To IEX
-                  </Link>
-                </section>
-              );
-            }}
-          />
+          <Route path="/" exact render={() => <HomeComponent />} />
           <Route path="/test" exact render={() => <TestPlot />} />
           <Route
             path="/basic"
